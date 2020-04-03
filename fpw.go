@@ -47,6 +47,9 @@ func ExtendedFirefox(userdir string, private bool, extensiondirs []string, args 
 
 func SecureExtendedFirefox(userdir string, private bool, extensionxpis, extensionhashes []string, args ...string) (UI, error) {
 	var extensionArgs []string
+	if len(extensionxpis) != len(extensionhashes) {
+		return nil, fmt.Errorf("hash list is different from extension XPI list")
+	}
 	for index, extension := range extensionxpis {
 		if _, err := os.Stat(userdir + "/extensions/" + extension); err != nil {
 			return nil, err
