@@ -96,7 +96,7 @@ func LocateFirefox() string {
 // opens a download web page if the user agrees.
 func PromptDownload() {
 	title := "Firefox not found"
-	text := "No Firefox/Chromium installation was found. Would you like to download and install it now?"
+	text := "No Firefox installation was found. Would you like to download and install it now?"
 
 	// Ask user for confirmation
 	if !messageBox(title, text) {
@@ -104,7 +104,7 @@ func PromptDownload() {
 	}
 
 	// Open download page
-	url := "https://www.google.com/firefox/"
+	url := "https://www.mozilla.org/firefox/"
 	switch runtime.GOOS {
 	case "linux":
 		exec.Command("xdg-open", url).Run()
