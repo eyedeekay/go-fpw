@@ -41,13 +41,13 @@ type UI interface {
 	Close() error
 }
 
-// ChromeExecutable returns a string which points to the preferred Chrome
+// FirefoxExecutable returns a string which points to the preferred Firefox
 // executable file.
-var ChromeExecutable = LocateChrome
+var FirefoxExecutable = LocateFirefox
 
-// LocateChrome returns a path to the Chrome binary, or an empty string if
-// Chrome installation is not found.
-func LocateChrome() string {
+// LocateFirefox returns a path to the Firefox binary, or an empty string if
+// Firefox installation is not found.
+func LocateFirefox() string {
 
 	// If env variable "LORCACHROME" specified and it exists
 	if path, ok := os.LookupEnv("FIREFOX_BIN"); ok {
@@ -60,21 +60,20 @@ func LocateChrome() string {
 	switch runtime.GOOS {
 	case "darwin":
 		paths = []string{
-			"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-			"/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary",
-			"/Applications/Chromium.app/Contents/MacOS/Chromium",
+			"/Applications/Moxilla Firefox.app/Contents/MacOS/Mozilla Firefox",
+			"/Applications/Firefox.app/Contents/MacOS/Mozilla Firefox",
 			"/usr/bin/firefox-esr",
 			"/usr/bin/firefox",
 			"/usr/bin/icecat",
 		}
 	case "windows":
 		paths = []string{
-			os.Getenv("LocalAppData") + "/Mozilla Firefox/chrome.exe",
-			os.Getenv("ProgramFiles") + "/Mozilla Firefox/chrome.exe",
-			os.Getenv("ProgramFiles(x86)") + "/Mozilla Firefox/chrome.exe",
-			os.Getenv("LocalAppData") + "/GNU Icecat/chrome.exe",
-			os.Getenv("ProgramFiles") + "/GNU Icecat/chrome.exe",
-			os.Getenv("ProgramFiles(x86)") + "/GNU Icecat/chrome.exe",
+			os.Getenv("LocalAppData") + "/Mozilla Firefox/firefox.exe",
+			os.Getenv("ProgramFiles") + "/Mozilla Firefox/firefox.exe",
+			os.Getenv("ProgramFiles(x86)") + "/Mozilla Firefox/firefox.exe",
+			os.Getenv("LocalAppData") + "/GNU Icecat/icecat.exe",
+			os.Getenv("ProgramFiles") + "/GNU Icecat/icecat.exe",
+			os.Getenv("ProgramFiles(x86)") + "/GNU Icecat/icecat.exe",
 		}
 	default:
 		paths = []string{
@@ -93,11 +92,11 @@ func LocateChrome() string {
 	return ""
 }
 
-// PromptDownload asks user if he wants to download and install Chrome, and
+// PromptDownload asks user if he wants to download and install Firefox, and
 // opens a download web page if the user agrees.
 func PromptDownload() {
-	title := "Chrome not found"
-	text := "No Chrome/Chromium installation was found. Would you like to download and install it now?"
+	title := "Firefox not found"
+	text := "No Firefox/Chromium installation was found. Would you like to download and install it now?"
 
 	// Ask user for confirmation
 	if !messageBox(title, text) {
@@ -105,7 +104,7 @@ func PromptDownload() {
 	}
 
 	// Open download page
-	url := "https://www.google.com/chrome/"
+	url := "https://www.google.com/firefox/"
 	switch runtime.GOOS {
 	case "linux":
 		exec.Command("xdg-open", url).Run()
@@ -139,7 +138,7 @@ func (u *ui) Done() <-chan struct{} {
 }
 
 func (u *ui) Close() error {
-	// ignore err, as the chrome process might be already dead, when user close the window.
+	// ignore err, as the firefox process might be already dead, when user close the window.
 	u.firefox.kill()
 	<-u.done
 	if u.tmpDir != "" {
@@ -174,9 +173,9 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 	args = append(args, customArgs...)
 	args = append(args, url)
 	//args = append(args, "--remote-debugging-port=0")
-	log.Println(ChromeExecutable(), args)
+	log.Println(FirefoxExecutable(), args)
 
-	firefox, err := newFirefoxWithArgs(ChromeExecutable(), args...)
+	firefox, err := newFirefoxWithArgs(FirefoxExecutable(), args...)
 	done := make(chan struct{})
 	if err != nil {
 		return nil, err
@@ -196,14 +195,14 @@ func (c *firefox) kill() error {
 	return nil
 }
 
-func newFirefoxWithArgs(chromeBinary string, args ...string) (*firefox, error) {
+func newFirefoxWithArgs(firefoxBinary string, args ...string) (*firefox, error) {
 	// The first two IDs are used internally during the initialization
 	c := &firefox{
 		id: 2,
 	}
 
-	// Start chrome process
-	c.cmd = exec.Command(chromeBinary, args...)
+	// Start firefox process
+	c.cmd = exec.Command(firefoxBinary, args...)
 	//pipe, err := c.cmd.StderrPipe()
 	//if err != nil {
 	//return nil, err
