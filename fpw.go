@@ -8,8 +8,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	//"github.com/eyedeekay/lorca"
-	//hashdir "github.com/sger/go-hashdir"
 )
 
 func BasicFirefox(userdir string, private bool, args ...string) (UI, error) {
