@@ -60,6 +60,7 @@ func SecureExtendedFirefox(userdir string, private bool, extensionxpis, extensio
 			if extensionhashes[index] != hexed {
 				return nil, fmt.Errorf("hash mismatch error on extension %s \n'%s' \n!= \n'%s'", userdir+"/extensions/"+extension, hexed, extensionhashes[index])
 			}
+			log.Printf("hash match on extension %s \n'%s' \n == \n'%s'", userdir+"/extensions/"+extension, hexed, extensionhashes[index])
 		} else {
 			return nil, fmt.Errorf("hash calculation error on extension %s %s", userdir+"/extensions/"+extension, err.Error())
 		}
