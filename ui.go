@@ -79,7 +79,9 @@ func LocateFirefox() string {
 		paths = []string{
 			"/usr/bin/firefox-esr",
 			"/usr/bin/firefox",
+			"/usr/bin/waterfox",
 			"/usr/bin/icecat",
+			"/usr/bin/purebrowser",
 		}
 	}
 
