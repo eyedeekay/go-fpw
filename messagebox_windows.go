@@ -31,7 +31,7 @@ import (
 	"unsafe"
 )
 
-func messageBox(title, text string) bool {
+func MessageBox(title, text string) bool {
 	user32 := syscall.NewLazyDLL("user32.dll")
 	messageBoxW := user32.NewProc("MessageBoxW")
 	mbYesNo := 0x00000004

@@ -34,7 +34,7 @@ import (
 	"syscall"
 )
 
-func messageBox(title, text string) bool {
+func MessageBox(title, text string) bool {
 	if runtime.GOOS == "linux" {
 		err := exec.Command("zenity", "--question", "--title", title, "--text", text).Run()
 		if err != nil {
