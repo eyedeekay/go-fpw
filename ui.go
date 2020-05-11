@@ -30,6 +30,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -45,6 +46,49 @@ type UI interface {
 // executable file.
 var FirefoxExecutable = LocateFirefox
 
+func PortablePath() string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Println("An error was encountered detecting the portable path", err)
+	}
+	listing, err := ioutil.ReadDir(dir)
+	for _, appdir := range listing {
+		if appdir.IsDir() {
+			for _, exe := range portableFiles() {
+				path := filepath.Join(dir, appdir.Name(), exe)
+				if _, err := os.Stat(path); os.IsNotExist(err) {
+					continue
+				}
+				log.Println(path)
+				return path
+			}
+
+		}
+	}
+	return "false"
+}
+
+func portableFiles() []string {
+	var paths []string
+	switch runtime.GOOS {
+	case "windows":
+		paths = []string{
+			"firefox.exe",
+			"icecat.exe",
+			"waterfox.exe",
+		}
+	default:
+		paths = []string{
+			"firefox-esr",
+			"firefox",
+			"waterfox",
+			"icecat",
+			"purebrowser",
+		}
+	}
+	return paths
+}
+
 // LocateFirefox returns a path to the Firefox binary, or an empty string if
 // Firefox installation is not found.
 func LocateFirefox() string {
@@ -54,6 +98,11 @@ func LocateFirefox() string {
 		if _, err := os.Stat(path); err == nil {
 			return path
 		}
+	}
+
+	portable := PortablePath()
+	if portable != "false" {
+		return portable
 	}
 
 	var paths []string
