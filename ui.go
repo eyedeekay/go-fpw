@@ -248,10 +248,10 @@ func (c *firefox) kill() error {
 
 func newFirefoxWithArgs(firefoxBinary string, args ...string) (*firefox, error) {
 	// The first two IDs are used internally during the initialization
-    if firefoxBinary == "" {
-        PromptDownload()
-        return nil, fmt.Errorf("Firefox not found.")
-    }
+	if firefoxBinary == "" {
+		PromptDownload()
+		return nil, fmt.Errorf("Firefox not found.")
+	}
 	c := &firefox{
 		id: 2,
 	}
