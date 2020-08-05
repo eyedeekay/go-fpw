@@ -109,6 +109,7 @@ func LocateFirefox() string {
 	switch runtime.GOOS {
 	case "darwin":
 		paths = []string{
+			"/Applications/Firefox.app/Contents/MacOS/firefox",
 			"/Applications/Moxilla Firefox.app/Contents/MacOS/Mozilla Firefox",
 			"/Applications/Firefox.app/Contents/MacOS/Mozilla Firefox",
 			"/usr/bin/firefox-esr",
