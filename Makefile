@@ -1,4 +1,4 @@
-VERSION=0.0.03
+VERSION=0.0.04
 
 fmt:
 	gofmt -w -s *.go
