@@ -40,6 +40,7 @@ import (
 type UI interface {
 	Done() <-chan struct{}
 	Close() error
+	Log() string
 }
 
 // FirefoxExecutable returns a string which points to the preferred Firefox
@@ -183,6 +184,14 @@ type ui struct {
 	firefox *firefox
 	done    chan struct{}
 	tmpDir  string
+}
+
+func (u *ui) Log() string {
+	out, err := u.firefox.cmd.Output()
+	if err != nil {
+		return err.Error()
+	}
+	return string(out)
 }
 
 func (u *ui) Done() <-chan struct{} {
