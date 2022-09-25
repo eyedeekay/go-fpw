@@ -17,8 +17,9 @@ func BasicFirefox(userdir string, private bool, args ...string) (UI, error) {
 		if arg == "--private-window" {
 			if private {
 				add = false
+			} else {
+				add = true
 			}
-			add = true
 		}
 		if add {
 			cleanedArgs = append(cleanedArgs, arg)
