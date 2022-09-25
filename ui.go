@@ -53,6 +53,9 @@ func PortablePath() string {
 		log.Println("An error was encountered detecting the portable path", err)
 	}
 	listing, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+	}
 	for _, appdir := range listing {
 		if appdir.IsDir() {
 			for _, exe := range portableFiles() {
@@ -75,13 +78,15 @@ func portableFiles() []string {
 	case "windows":
 		paths = []string{
 			"firefox.exe",
-			"icecat.exe",
+			"librewolf.exe",
 			"waterfox.exe",
+			"icecat.exe",
 		}
 	default:
 		paths = []string{
 			"firefox-esr",
 			"firefox",
+			"librewolf",
 			"waterfox",
 			"icecat",
 			"purebrowser",
@@ -90,57 +95,143 @@ func portableFiles() []string {
 	return paths
 }
 
+func defaultPaths() []string {
+	var paths []string
+	switch runtime.GOOS {
+	case "windows":
+		dirs := windowsDefaultPaths()
+		exes := portableFiles()
+		for _, dir := range dirs {
+			for _, exe := range exes {
+				paths = append(paths, filepath.Join(dir, exe))
+			}
+		}
+	case "darwin":
+		dirs := darwinDefaultPaths()
+		exes := portableFiles()
+		for _, dir := range dirs {
+			for _, exe := range exes {
+				paths = append(paths, filepath.Join(dir, exe))
+			}
+		}
+	default:
+		dirs := linuxDefaultPaths()
+		exes := portableFiles()
+		for _, dir := range dirs {
+			for _, exe := range exes {
+				paths = append(paths, filepath.Join(dir, exe))
+			}
+		}
+	}
+	return paths
+}
+
+func optBins() []string {
+	fi, err := ioutil.ReadDir("/opt/")
+	if err != nil {
+		log.Println(err.Error())
+		return []string{""}
+	}
+	var optbins []string
+	for _, f := range fi {
+		if f.IsDir() {
+			if strings.HasSuffix(f.Name(), "bin") {
+				optbins = append(optbins, f.Name())
+			}
+		}
+	}
+	return optbins
+}
+
+func windowsDefaultPaths() []string {
+	userHome, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+
+	programFiles := os.Getenv("ProgramFiles")
+	// String localAppData = System.getenv("LOCALAPPDATA");
+	// Is there some way Mozilla does adminless installs to LocalAppData? Don't
+	// know for sure.
+	programFiles86 := os.Getenv("ProgramFiles(x86)")
+
+	tbPath := []string{
+		filepath.Join(userHome, "/OneDrive/Desktop/Tor Browser/Browser/"),
+		filepath.Join(userHome, "/Desktop/Tor Browser/Browser/"),
+	}
+
+	paths := []string{
+		tbPath[0],
+		tbPath[1],
+		filepath.Join(programFiles, "Mozilla Firefox/"),
+		filepath.Join(programFiles86, "Mozilla Firefox/"),
+		filepath.Join(programFiles, "Waterfox/"),
+		filepath.Join(programFiles86, "Waterfox/"),
+		filepath.Join(programFiles, "Librewolf/"),
+		filepath.Join(programFiles86, "Librewolf/"),
+	}
+
+	return paths
+}
+
+func linuxDefaultPaths() []string {
+	userHome, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	pathvar := os.Getenv("PATH")
+	elements := strings.Split(pathvar, ":")
+	additionalelements := []string{"/opt/bin", filepath.Join(userHome, "bin")}
+	optbins := optBins()
+	elements = append(elements, additionalelements...)
+	elements = append(elements, optbins...)
+	return elements
+}
+
+func darwinDefaultPaths() []string {
+	userHome, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	elements := []string{"/Applications/Firefox.app/Contents/MacOS/",
+		"/Applications/Waterfox.app/Contents/MacOS/",
+		"/Applications/Librewolf.app/Contents/MacOS/"}
+	pathvar := os.Getenv("PATH")
+	pathelements := strings.Split(pathvar, ":")
+	additionalelements := []string{"/opt/bin", filepath.Join(userHome, "bin")}
+	optbins := optBins()
+	elements = append(elements, pathelements...)
+	elements = append(elements, additionalelements...)
+	elements = append(elements, optbins...)
+	return elements
+}
+
 // LocateFirefox returns a path to the Firefox binary, or an empty string if
 // Firefox installation is not found.
 func LocateFirefox() string {
-
 	// If env variable "LORCACHROME" specified and it exists
 	if path, ok := os.LookupEnv("FIREFOX_BIN"); ok {
 		if _, err := os.Stat(path); err == nil {
 			return path
 		}
 	}
-
-	portable := PortablePath()
-	if portable != "false" {
-		return portable
-	}
-
-	var paths []string
-	switch runtime.GOOS {
-	case "darwin":
-		paths = []string{
-			"/Applications/Firefox.app/Contents/MacOS/firefox",
-			"/Applications/Moxilla Firefox.app/Contents/MacOS/Mozilla Firefox",
-			"/Applications/Firefox.app/Contents/MacOS/Mozilla Firefox",
-			"/usr/bin/firefox-esr",
-			"/usr/bin/firefox",
-			"/usr/bin/icecat",
-		}
-	case "windows":
-		paths = []string{
-			os.Getenv("LocalAppData") + "/Mozilla Firefox/firefox.exe",
-			os.Getenv("ProgramFiles") + "/Mozilla Firefox/firefox.exe",
-			os.Getenv("ProgramFiles(x86)") + "/Mozilla Firefox/firefox.exe",
-			os.Getenv("LocalAppData") + "/GNU Icecat/icecat.exe",
-			os.Getenv("ProgramFiles") + "/GNU Icecat/icecat.exe",
-			os.Getenv("ProgramFiles(x86)") + "/GNU Icecat/icecat.exe",
-		}
-	default:
-		paths = []string{
-			"/usr/bin/firefox-esr",
-			"/usr/bin/firefox",
-			"/usr/bin/waterfox",
-			"/usr/bin/icecat",
-			"/usr/bin/purebrowser",
-		}
-	}
+	paths := defaultPaths()
+	//exes := portableFiles()
 
 	for _, path := range paths {
-		if _, err := os.Stat(path); os.IsNotExist(err) {
+		//for _, exe := range exes {
+
+		if info, err := os.Stat(path); os.IsNotExist(err) {
+			//err != nil {
+			//log.Println(exepath, err)
 			continue
+		} else {
+			if !info.IsDir() {
+				log.Println(path)
+				return path
+			}
 		}
-		return path
+		//}
 	}
 	return ""
 }
