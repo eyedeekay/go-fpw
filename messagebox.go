@@ -1,4 +1,5 @@
-//+build !windows
+//go:build !windows
+// +build !windows
 
 package fcw
 
@@ -34,6 +35,8 @@ import (
 	"syscall"
 )
 
+// MessageBox creates a dialog box which prompts the user to download and install Firefox if they
+// have not already.
 func MessageBox(title, text string) bool {
 	if runtime.GOOS == "linux" {
 		err := exec.Command("zenity", "--question", "--title", title, "--text", text).Run()

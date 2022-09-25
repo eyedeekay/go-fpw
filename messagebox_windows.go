@@ -1,4 +1,5 @@
-//+build windows
+//go:build windows
+// +build windows
 
 package fcw
 
@@ -31,6 +32,8 @@ import (
 	"unsafe"
 )
 
+// MessageBox creates a dialog box which prompts the user to download and install Firefox if they
+// have not already.
 func MessageBox(title, text string) bool {
 	user32 := syscall.NewLazyDLL("user32.dll")
 	messageBoxW := user32.NewProc("MessageBoxW")

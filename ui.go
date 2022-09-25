@@ -37,6 +37,7 @@ import (
 	"sync"
 )
 
+// UI is a wrapper/manager for a Firefox external process.
 type UI interface {
 	Done() <-chan struct{}
 	Close() error
@@ -44,9 +45,11 @@ type UI interface {
 }
 
 // FirefoxExecutable returns a string which points to the preferred Firefox
-// executable file.
+// executable file as calculated by the LocateFirefox variable
 var FirefoxExecutable = LocateFirefox
 
+// PortablePath determines if there is a "Portable" Firefox in a sub-directory
+// of the runtime directory
 func PortablePath() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
@@ -216,7 +219,6 @@ func LocateFirefox() string {
 		}
 	}
 	paths := defaultPaths()
-	//exes := portableFiles()
 
 	for _, path := range paths {
 		//for _, exe := range exes {
@@ -236,7 +238,7 @@ func LocateFirefox() string {
 	return ""
 }
 
-// PromptDownload asks user if he wants to download and install Firefox, and
+// PromptDownload asks user if they want to download and install Firefox, and
 // opens a download web page if the user agrees.
 func PromptDownload() {
 	title := "Firefox not found"
@@ -306,6 +308,7 @@ var firefoxArgs = []string{
 	"--new-instance",
 }
 
+// NewFirefox creates a new instance of the Firefox manager.
 func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error) {
 	if url == "" {
 		url = "about:blank"
@@ -359,67 +362,9 @@ func newFirefoxWithArgs(firefoxBinary string, args ...string) (*firefox, error) 
 
 	// Start firefox process
 	c.cmd = exec.Command(firefoxBinary, args...)
-	//pipe, err := c.cmd.StderrPipe()
-	//if err != nil {
-	//return nil, err
-	//}
 	if err := c.cmd.Start(); err != nil {
 		return nil, err
 	}
-
-	// Wait for websocket address to be printed to stderr
-	/*re := regexp.MustCompile(`^DevTools listening on (ws://.*?)\r?\n$`)
-	m, err := readUntilMatch(pipe, re)
-	if err != nil {
-		c.kill()
-		return nil, err
-	}
-	wsURL := m[1]
-
-	// Open a websocket
-	c.ws, err = websocket.Dial(wsURL, "", "http://127.0.0.1")
-	if err != nil {
-		c.kill()
-		return nil, err
-	}
-
-	// Find target and initialize session
-	c.target, err = c.findTarget()
-	if err != nil {
-		c.kill()
-		return nil, err
-	}
-
-	c.session, err = c.startSession(c.target)
-	if err != nil {
-		c.kill()
-		return nil, err
-	}
-	go c.readLoop()
-	for method, args := range map[string]h{
-		"Page.enable":          nil,
-		"Target.setAutoAttach": {"autoAttach": true, "waitForDebuggerOnStart": false},
-		"Network.enable":       nil,
-		"Runtime.enable":       nil,
-		"Security.enable":      nil,
-		"Performance.enable":   nil,
-		"Log.enable":           nil,
-	} {
-		if _, err := c.send(method, args); err != nil {
-			c.kill()
-			c.cmd.Wait()
-			return nil, err
-		}
-	}
-
-	if !contains(args, "--headless") {
-		win, err := c.getWindowForTarget(c.target)
-		if err != nil {
-			c.kill()
-			return nil, err
-		}
-		c.window = win.WindowID
-	}*/
 
 	return c, nil
 }

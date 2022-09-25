@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>
-      go-fpw
+      fcw
     </title>
     <meta name="author" content="eyedeekay" />
     <meta name="description" content="go-fpw" />
@@ -39,10 +39,94 @@
       /
     </a>
     <h1>
-      go-fpw
+      fcw
     </h1>
     <p>
-      Firefox Profile Wrapper configurable and callable from Go.
+      &ndash;
+      import &ldquo;github.com/eyedeekay/go-fpw&rdquo;
+    </p>
+    <h2>
+      Usage
+    </h2>
+    <pre><code class="language-go">var FirefoxExecutable = LocateFirefox
+</code></pre>
+    <p>
+      FirefoxExecutable returns a string which points to the preferred Firefox
+      executable file as calculated by the LocateFirefox variable
+    </p>
+    <h4>
+      func  LocateFirefox
+    </h4>
+    <pre><code class="language-go">func LocateFirefox() string
+</code></pre>
+    <p>
+      LocateFirefox returns a path to the Firefox binary, or an empty string if
+      Firefox installation is not found.
+    </p>
+    <h4>
+      func  MessageBox
+    </h4>
+    <pre><code class="language-go">func MessageBox(title, text string) bool
+</code></pre>
+    <p>
+      MessageBox creates a dialog box which prompts the user to download and install
+      Firefox if they have not already.
+    </p>
+    <h4>
+      func  PortablePath
+    </h4>
+    <pre><code class="language-go">func PortablePath() string
+</code></pre>
+    <p>
+      PortablePath determines if there is a &ldquo;Portable&rdquo; Firefox in a sub-directory of
+      the runtime directory
+    </p>
+    <h4>
+      func  PromptDownload
+    </h4>
+    <pre><code class="language-go">func PromptDownload()
+</code></pre>
+    <p>
+      PromptDownload asks user if they want to download and install Firefox, and opens
+      a download web page if the user agrees.
+    </p>
+    <h4>
+      func  Run
+    </h4>
+    <pre><code class="language-go">func Run() error
+</code></pre>
+    <p>
+      Run creates a basic instance of the Firefox manager with a default profile
+      directory and launches duckduckgo.com
+    </p>
+    <h4>
+      type UI
+    </h4>
+    <pre><code class="language-go">type UI interface {
+	Done() &lt;-chan struct{}
+	Close() error
+	Log() string
+}
+</code></pre>
+    <p>
+      UI is a wrapper/manager for a Firefox external process.
+    </p>
+    <h4>
+      func  BasicFirefox
+    </h4>
+    <pre><code class="language-go">func BasicFirefox(userdir string, private bool, args ...string) (UI, error)
+</code></pre>
+    <p>
+      BasicFirefox sets up a new Firefox instance, and creates the profile directory
+      if it does not already exist.
+    </p>
+    <h4>
+      func  NewFirefox
+    </h4>
+    <pre><code class="language-go">func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error)
+</code></pre>
+    <p>
+      NewFirefox creates a new instance of the Firefox manager.
     </p>
     <div id="sourcecode">
       <span id="sourcehead">
