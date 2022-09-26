@@ -2,6 +2,11 @@
 --
     import "github.com/eyedeekay/go-fpw"
 
+Package fcw wraps a Firefox process from start-to-finish, and allows the user to
+pass a profile directory to that process where it will find pre-configured
+settings. It's useful for using Firefox as an interface to applications, and for
+applying specific settings for use when browsing overlay networks like Tor or
+I2P.
 
 ## Usage
 
