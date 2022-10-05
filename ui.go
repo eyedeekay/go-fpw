@@ -320,8 +320,6 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 	}
 	args := append(firefoxArgs, "--profile")
 	args = append(args, dir)
-	args = append(args, "--window-size")
-	args = append(args, fmt.Sprintf("%d,%d", width, height))
 	args = append(args, customArgs...)
 	args = append(args, url)
 	//args = append(args, "--remote-debugging-port=0")
