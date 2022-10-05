@@ -310,9 +310,6 @@ var firefoxArgs = []string{
 
 // NewFirefox creates a new instance of the Firefox manager.
 func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error) {
-	if url == "" {
-		url = "about:blank"
-	}
 	tmpDir := ""
 	if dir == "" {
 		name, err := ioutil.TempDir("", "ffox")

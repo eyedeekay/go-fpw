@@ -52,8 +52,10 @@ func BasicFirefox(userdir string, private bool, args ...string) (UI, error) {
 				add = true
 			}
 		}
-		if add {
-			cleanedArgs = append(cleanedArgs, arg)
+		if arg != "" {
+			if add {
+				cleanedArgs = append(cleanedArgs, arg)
+			}
 		}
 	}
 	log.Println("Args", cleanedArgs)
@@ -67,7 +69,7 @@ func BasicFirefox(userdir string, private bool, args ...string) (UI, error) {
 // Run creates a basic instance of the Firefox manager with a default profile directory and
 // launches duckduckgo.com
 func Run() error {
-	var FIREFOX, ERROR = BasicFirefox("basic", true, "https://duckduckgo.com")
+	var FIREFOX, ERROR = BasicFirefox("basic", true, "")
 	if ERROR != nil {
 		return ERROR
 	}
