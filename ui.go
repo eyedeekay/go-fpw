@@ -212,7 +212,7 @@ func darwinDefaultPaths() []string {
 // LocateFirefox returns a path to the Firefox binary, or an empty string if
 // Firefox installation is not found.
 func LocateFirefox() string {
-	// If env variable "LORCACHROME" specified and it exists
+	// If env variable "FIREFOX_BIN" specified and it exists
 	if path, ok := os.LookupEnv("FIREFOX_BIN"); ok {
 		if _, err := os.Stat(path); err == nil {
 			return path
