@@ -1,8 +1,8 @@
 package main
 
 import (
-    "log"
-    "github.com/eyedeekay/go-fpw"
+	"github.com/eyedeekay/go-fpw"
+	"log"
 )
 
 func main() {

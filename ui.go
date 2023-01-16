@@ -308,6 +308,15 @@ var firefoxArgs = []string{
 	"--new-instance",
 }
 
+func trimBlankArgs(args []string) (trimmedArgs []string) {
+	for _, v := range args {
+		if v != "" {
+			trimmedArgs = append(trimmedArgs, v)
+		}
+	}
+	return
+}
+
 // NewFirefox creates a new instance of the Firefox manager.
 func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error) {
 	tmpDir := ""
@@ -324,6 +333,7 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 	args = append(args, fmt.Sprintf("%d,%d", width, height))
 	args = append(args, customArgs...)
 	args = append(args, url)
+	args = trimBlankArgs(args)
 	//args = append(args, "--remote-debugging-port=0")
 	log.Println(FirefoxExecutable(), args)
 
