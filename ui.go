@@ -349,7 +349,7 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 		}
 		dir, tmpDir = name, name
 	} else {
-
+		dir = directory(dir)
 	}
 	args := append(firefoxArgs, "--profile")
 	args = append(args, dir)

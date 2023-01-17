@@ -40,7 +40,7 @@ import (
 // BasicFirefox sets up a new Firefox instance, and creates the profile directory if
 // it does not already exist.
 func BasicFirefox(userdir string, private bool, args ...string) (UI, error) {
-	directory(userdir)
+	userdir = directory(userdir)
 	add := true
 	var cleanedArgs []string
 	if private {
@@ -72,7 +72,7 @@ func BasicFirefox(userdir string, private bool, args ...string) (UI, error) {
 // it does not already exist. It turns Firefox into a WebApp-Viewer with the provided
 // profile
 func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
-	directory(userdir)
+	userdir = directory(userdir)
 	add := true
 	var cleanedArgs []string
 	if private {
