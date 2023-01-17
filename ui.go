@@ -28,11 +28,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
+	"time"
 
 	"sync"
 )
@@ -317,6 +320,14 @@ func trimBlankArgs(args []string) (trimmedArgs []string) {
 	return
 }
 
+func randir() string {
+	max := 999999
+	min := 100000
+	rand.Seed(time.Now().UnixNano())
+	v := rand.Intn(max-min) + min
+	return "-" + strconv.Itoa(v)
+}
+
 // NewFirefox creates a new instance of the Firefox manager.
 func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error) {
 	tmpDir := ""
@@ -327,7 +338,13 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 		}
 		dir, tmpDir = name, name
 	} else {
-		os.MkdirAll(dir, 0755)
+		if file, err := os.Stat(dir); os.IsNotExist(err) {
+			os.MkdirAll(dir, 0755)
+		} else {
+			if !file.IsDir() {
+				dir = dir + randir()
+			}
+		}
 	}
 	args := append(firefoxArgs, "--profile")
 	args = append(args, dir)
