@@ -328,6 +328,17 @@ func randir() string {
 	return "-" + strconv.Itoa(v)
 }
 
+func directory(dir string) string {
+	if file, err := os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, 0755)
+	} else {
+		if !file.IsDir() {
+			dir = dir + randir()
+		}
+	}
+	return dir
+}
+
 // NewFirefox creates a new instance of the Firefox manager.
 func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error) {
 	tmpDir := ""
@@ -338,13 +349,7 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 		}
 		dir, tmpDir = name, name
 	} else {
-		if file, err := os.Stat(dir); os.IsNotExist(err) {
-			os.MkdirAll(dir, 0755)
-		} else {
-			if !file.IsDir() {
-				dir = dir + randir()
-			}
-		}
+
 	}
 	args := append(firefoxArgs, "--profile")
 	args = append(args, dir)
