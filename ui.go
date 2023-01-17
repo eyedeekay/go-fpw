@@ -28,14 +28,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
-	"time"
 
 	"sync"
 )
@@ -321,11 +318,7 @@ func trimBlankArgs(args []string) (trimmedArgs []string) {
 }
 
 func randir() string {
-	max := 999999
-	min := 100000
-	rand.Seed(time.Now().UnixNano())
-	v := rand.Intn(max-min) + min
-	return "-" + strconv.Itoa(v)
+	return "1"
 }
 
 func directory(dir string) string {
