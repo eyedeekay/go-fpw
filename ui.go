@@ -32,6 +32,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"sync"
@@ -322,12 +323,21 @@ func randir() string {
 }
 
 func directory(dir string) string {
+	i := 0
 	if file, err := os.Stat(dir); os.IsNotExist(err) {
 		os.MkdirAll(dir, 0755)
 	} else {
 		if !file.IsDir() {
-			dir = dir + randir()
+			for {
+				dir = dir + "-" + strconv.Itoa(i)
+				i++
+				if _, err := os.Stat(dir); os.IsNotExist(err) {
+					os.MkdirAll(dir, 0755)
+					return dir
+				}
+			}
 		}
+
 	}
 	return dir
 }
