@@ -30,12 +30,18 @@ package fcw
 **/
 
 import (
+	"embed"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+//go:embed copy_tab_url_to_clipboard-1.0.xpi
+var extraExtension []byte
+
+var dummy embed.FS
 
 // BasicFirefox sets up a new Firefox instance, and creates the profile directory if
 // it does not already exist.
