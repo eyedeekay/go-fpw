@@ -74,16 +74,25 @@ func BasicFirefox(userdir string, private bool, args ...string) (UI, error) {
 	return NewFirefox("", userdir, 800, 600, cleanedArgs...)
 }
 
+func increment(i *int) int {
+	*i++
+	return *i
+}
+
 // WebAppFirefox sets up a new Firefox instance, and creates the profile directory if
 // it does not already exist. It turns Firefox into a WebApp-Viewer with the provided
 // profile
 func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
+	//i := 0
+	//log.Println(increment(&i))
 	userdir = directory(userdir)
+	//log.Println(increment(&i))
 	add := true
 	var cleanedArgs []string
 	if private {
 		cleanedArgs = append(cleanedArgs, "--private-window")
 	}
+	//log.Println(increment(&i))
 	for _, arg := range args {
 		if arg == "--private-window" {
 			if private {
@@ -134,6 +143,13 @@ func UnpackApp(profileDir string) (string, error) {
 }
 
 func appifyUserJS(profile string) error {
+	extDir := filepath.Join(filepath.Dir(profile), "extensions")
+	if err := os.MkdirAll(extDir, 0755); err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi"), extraExtension, 0644); err != nil {
+		return err
+	}
 	if _, err := os.Stat(profile); err != nil {
 		if err := ioutil.WriteFile(profile, []byte("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n"), 0644); err != nil {
 			return err
@@ -178,6 +194,13 @@ func appifyUserJS(profile string) error {
 func deAppifyUserJS(profile string) error {
 	if _, err := os.Stat(profile); err != nil {
 		return nil
+	}
+	extDir := filepath.Join(filepath.Dir(profile), "extensions")
+	if err := os.MkdirAll(extDir, 0755); err != nil {
+		return err
+	}
+	if err := os.Remove(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi")); err != nil {
+		log.Println(err)
 	}
 	content, err := ioutil.ReadFile(profile)
 	if err != nil {
@@ -274,7 +297,7 @@ toolbar {
 // Run creates a basic instance of the Firefox manager with a default profile directory and
 // launches duckduckgo.com
 func Run() error {
-	var FIREFOX, ERROR = WebAppFirefox("basic", true, "")
+	var FIREFOX, ERROR = WebAppFirefox("basic", false, "")
 	if ERROR != nil {
 		return ERROR
 	}
