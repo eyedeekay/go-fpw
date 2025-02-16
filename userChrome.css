@@ -1,0 +1,119 @@
+/* Firefox userChrome.css for minimal UI with tabs and extension buttons
+ * Compatible with Firefox 115+
+ * Maintains tab bar and extension buttons while hiding other UI elements
+ */
+
+/* Required namespace declarations */
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+/* Root variables for consistent theming */
+:root {
+    --toolbar-bgcolor: #2B2A33;
+    --chrome-content-separator-color: transparent;
+}
+
+/* Hide non-essential UI elements with improved specificity */
+:root {
+    --uc-toolbar-height: 32px;
+}
+
+/* Hide specific UI elements more reliably */
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #PersonalToolbar,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #PanelUI-Button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #PanelUI-menu-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #star-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #forward-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #home-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #bookmarks-toolbar-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #library-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #sidebar-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #pocket-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #fxa-toolbar-menu-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #reader-mode-button,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #customizableui-special-spring1,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #customizableui-special-spring2,
+#main-window[tabsintitlebar="true"]:not([inFullscreen]) #identity-icon {
+    display: none !important;
+}
+
+/* URL bar styling with improved specificity */
+#urlbar-container {
+    display: none !important;
+}
+
+#urlbar-background {
+    background-color: var(--toolbar-bgcolor) !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Back button styling with proper selector specificity */
+#back-button {
+    -moz-appearance: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#back-button:not(:hover) > .toolbarbutton-icon,
+#back-button:not(:hover) {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#back-button:hover > .toolbarbutton-icon,
+#back-button:hover {
+    background-color: color-mix(in srgb, currentColor 12%, transparent) !important;
+    border-radius: 2px !important;
+}
+
+/* Tabs toolbar layout with flex positioning */
+#TabsToolbar {
+    display: flex !important;
+    flex: 1;
+    min-height: var(--uc-toolbar-height) !important;
+}
+
+#TabsToolbar-customization-target {
+    min-width: 50vw;
+    max-width: 50vw;
+    width: 50vw;
+    flex: 1;
+}
+
+/* Main toolbar container */
+#navigator-toolbox {
+    display: flex !important;
+    flex-direction: row !important;
+    background-color: var(--toolbar-bgcolor) !important;
+}
+
+/* Ensure extension buttons remain visible */
+#nav-bar-customization-target {
+    display: flex !important;
+    flex: 0 1 auto;
+}
+
+/* Handle overflow for extension buttons */
+#nav-bar-overflow-button {
+    display: flex !important;
+    visibility: visible !important;
+}
+
+/* Fix for potential layout issues in fullscreen */
+#main-window[inFullscreen] #navigator-toolbox {
+    display: flex !important;
+}
+
+/* Ensure tab bar remains visible and properly sized */
+#tabbrowser-tabs {
+    min-height: var(--uc-toolbar-height) !important;
+    flex: 1;
+}
+
+/* Ensure proper spacing for extension icons */
+.webextension-browser-action {
+    margin: 0 2px !important;
+}
