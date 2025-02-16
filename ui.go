@@ -43,6 +43,7 @@ type UI interface {
 	Done() <-chan struct{}
 	Close() error
 	Log() string
+	CertManager() (*CertManager, error)
 }
 
 // FirefoxExecutable returns a string which points to the preferred Firefox
@@ -267,15 +268,16 @@ type firefox struct {
 	sync.Mutex
 	cmd *exec.Cmd
 	//ws       *websocket.Conn
-	id      int32
-	target  string
-	session string
-	window  int
+	id          int32
+	target      string
+	session     string
+	window      int
+	certManager *CertManager
 	//pending  map[int]chan result
 }
 
 type ui struct {
-	firefox *firefox
+	*firefox
 	done    chan struct{}
 	tmpDir  string
 }
@@ -342,6 +344,17 @@ func directory(dir string) string {
 	return dir
 }
 
+func (f *firefox) CertManager() (*CertManager, error) {
+	if f.certManager == nil {
+		cm, err := NewCertManager(f.target)
+		if err != nil {
+			return nil, err
+		}
+		f.certManager = cm
+	}
+	return f.certManager, nil
+}
+
 // NewFirefox creates a new instance of the Firefox manager.
 func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error) {
 	tmpDir := ""
@@ -374,7 +387,11 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 		firefox.cmd.Wait()
 		close(done)
 	}()
-	return &ui{firefox: firefox, done: done, tmpDir: tmpDir}, nil
+	return &ui{
+		firefox:     firefox,
+		done:        done,
+		tmpDir:      tmpDir,
+	}, nil
 }
 
 func (c *firefox) kill() error {
