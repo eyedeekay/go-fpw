@@ -41,6 +41,9 @@ import (
 //go:embed copy_tab_url_to_clipboard-1.0.xpi
 var extraExtension []byte
 
+//go:embed userChrome.css
+var userChrome []byte
+
 var dummy embed.FS
 
 // BasicFirefox sets up a new Firefox instance, and creates the profile directory if
@@ -151,8 +154,10 @@ func appifyUserJS(profile string) error {
 		return err
 	}
 	if _, err := os.Stat(profile); err != nil {
-		if err := ioutil.WriteFile(profile, []byte("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n"), 0644); err != nil {
-			return err
+		if strings.Contains(profile, "prefs.js") {
+			if err := ioutil.WriteFile(profile, []byte("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n"), 0644); err != nil {
+				return err
+			}
 		}
 	} else {
 		content, err := ioutil.ReadFile(profile)
@@ -225,70 +230,7 @@ func deAppifyUserJS(profile string) error {
 }
 
 func forceUserChromeCSS(profile string) error {
-	var userChrome = `@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
-
-/* only needed once */
-
-@namespace html url("http://www.w3.org/1999/xhtml");
-#PersonalToolbar,
-#PanelUI-Button,
-#PanelUI-menu-button,
-#star-button,
-#forward-button,
-#home-button,
-#bookmarks-toolbar-button,
-#library-button,
-#sidebar-button,
-#pocket-button,
-#fxa-toolbar-menu-button,
-#reader-mode-button,
-#identity-icon {
-    visibility: collapse;
-}
-
-#urlbar-background {
-    background-color: black !important;
-}
-
-
-/* Remove back button circle */
-
-#back-button:not(:hover),
-#back-button:not(:hover)>.toolbarbutton-icon {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-#back-button:hover,
-#back-button:hover>.toolbarbutton-icon {
-    border: none !important;
-    border-radius: 2px !important;
-}
-
-#urlbar-container {
-    visibility: collapse !important
-}
-
-#TabsToolbar-customization-target {
-    min-width: 50vw;
-    max-width: 50vw;
-    width: 50vw;
-}
-
-#TabsToolbar {
-    display: inherit;
-}
-
-toolbar {
-    max-width: 50%;
-}
-
-#navigator-toolbox {
-    display: inline-flex;
-}
-`
-	if err := ioutil.WriteFile(profile, []byte(userChrome), 0644); err != nil {
+	if err := ioutil.WriteFile(profile, userChrome, 0644); err != nil {
 		return err
 	}
 	return nil

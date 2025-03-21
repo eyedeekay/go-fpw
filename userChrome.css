@@ -1,0 +1,90 @@
+/* MINIMAL SINGLE-LINE FIREFOX INTERFACE (REVISED) */
+
+/* First, restore critical elements */
+#tabbrowser-tabs,
+#new-tab-button,
+#tabs-newtab-button,
+#TabsToolbar-customization-target {
+  display: -moz-box !important; /* Ensures tab functionality */
+}
+
+#firefox-view-button {
+  visibility: hidden !important; /* Hide the view button */
+}
+
+/* Hide the dev tools button */
+#developer-button {
+  visibility: hidden !important;
+}
+
+/* Hide URL bar but preserve tab functionality */
+#urlbar-container {
+  min-width: 0 !important;
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  opacity: 0.01 !important; /* Using 0.01 instead of 0 preserves functionality */
+  visibility: hidden !important;
+}
+
+/* Properly position elements */
+#nav-bar {
+  margin-top: -40px !important; /* Adjust based on your toolbar height */
+  position: relative !important;
+  z-index: 1 !important; 
+  pointer-events: none !important; /* Let mouse events pass through to tabs */
+  margin-right: 10%; /* Adjust based on your screen size */
+}
+
+/* But make buttons in navbar clickable */
+#nav-bar-customization-target,
+.toolbarbutton-1,
+#PanelUI-button,
+#unified-extensions-button,
+#nav-bar toolbar {
+  pointer-events: auto !important; /* Make specific elements clickable */
+}
+
+/* Fix window controls for theme compatibility */
+.titlebar-button:-moz-lwtheme {
+  appearance: auto !important;
+}
+
+.titlebar-min:-moz-lwtheme,
+.titlebar-max:-moz-lwtheme,
+.titlebar-restore:-moz-lwtheme,
+.titlebar-close:-moz-lwtheme {
+  list-style-image: none !important;
+}
+
+.titlebar-button:-moz-lwtheme:hover,
+.titlebar-button:-moz-lwtheme:hover:active {
+  background-color: unset !important;
+  color: unset !important;
+}
+
+/* Make buttons and widgets sync colors with the titlebar */
+:root {
+  --toolbarbutton-icon-fill: color-mix(in srgb, currentColor 95%, transparent) !important;
+  --button-color: currentColor !important;
+  --button-bgcolor: color-mix(in srgb, currentColor 13%, transparent) !important;
+  --button-hover-bgcolor: color-mix(in srgb, currentColor 17%, transparent) !important;
+  --button-active-bgcolor: color-mix(in srgb, currentColor 30%, transparent) !important;
+}
+
+/* Fix tab bar to ensure it's visible and functional */
+#TabsToolbar {
+  z-index: 2 !important;
+  width: 60% !important; /* Adjust based on your screen size */
+  position: relative !important;
+}
+
+/* Remove extra tab bar space */
+#TabsToolbar {
+  padding-inline-start: 0px !important;
+  margin-bottom: none !important;
+}
+
+.titlebar-placeholder {
+  display: none !important;
+}
