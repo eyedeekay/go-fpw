@@ -86,16 +86,16 @@ func increment(i *int) int {
 // it does not already exist. It turns Firefox into a WebApp-Viewer with the provided
 // profile
 func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
-	//i := 0
-	//log.Println(increment(&i))
+	// i := 0
+	// log.Println(increment(&i))
 	userdir = directory(userdir)
-	//log.Println(increment(&i))
+	// log.Println(increment(&i))
 	add := true
 	var cleanedArgs []string
 	if private {
 		cleanedArgs = append(cleanedArgs, "--private-window")
 	}
-	//log.Println(increment(&i))
+	// log.Println(increment(&i))
 	for _, arg := range args {
 		if arg == "--private-window" {
 			if private {
@@ -127,7 +127,7 @@ func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
 // path to the profile and possibly, an error if something goes wrong. If everything
 // works, the error will be nil
 func UnpackApp(profileDir string) (string, error) {
-	if err := os.MkdirAll(filepath.Join(profileDir, "chrome"), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(profileDir, "chrome"), 0o755); err != nil {
 		return filepath.Join(profileDir), err
 	}
 	if err := forceUserChromeCSS(filepath.Join(profileDir, "chrome", "userChrome.css")); err != nil {
@@ -145,17 +145,25 @@ func UnpackApp(profileDir string) (string, error) {
 	return filepath.Join(profileDir), nil
 }
 
+/*
+
+
+ */
+
 func appifyUserJS(profile string) error {
+	prefset := "user_pref(\"extensions.autoDisableScopes\", 0);\n"
+	prefset += "user_pref(\"extensions.enabledScopes\", 1);\n"
+	prefset += "user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n"
 	extDir := filepath.Join(filepath.Dir(profile), "extensions")
-	if err := os.MkdirAll(extDir, 0755); err != nil {
+	if err := os.MkdirAll(extDir, 0o755); err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi"), extraExtension, 0644); err != nil {
+	if err := ioutil.WriteFile(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi"), extraExtension, 0o644); err != nil {
 		return err
 	}
 	if _, err := os.Stat(profile); err != nil {
 		if strings.Contains(profile, "prefs.js") {
-			if err := ioutil.WriteFile(profile, []byte("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n"), 0644); err != nil {
+			if err := ioutil.WriteFile(profile, []byte(prefset), 0o644); err != nil {
 				return err
 			}
 		}
@@ -178,17 +186,17 @@ func appifyUserJS(profile string) error {
 			lines[i] = line
 		}
 		out := strings.Join(lines, "\n")
-		if err := ioutil.WriteFile(profile, []byte(out), 0644); err != nil {
+		if err := ioutil.WriteFile(profile, []byte(out), 0o644); err != nil {
 			return err
 		}
 		if !finished {
 			f, err := os.OpenFile(profile,
-				os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+				os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 			if err != nil {
 				return err
 			}
 			defer f.Close()
-			if _, err := f.WriteString("user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n"); err != nil {
+			if _, err := f.WriteString(prefset); err != nil {
 				return err
 			}
 		}
@@ -201,7 +209,7 @@ func deAppifyUserJS(profile string) error {
 		return nil
 	}
 	extDir := filepath.Join(filepath.Dir(profile), "extensions")
-	if err := os.MkdirAll(extDir, 0755); err != nil {
+	if err := os.MkdirAll(extDir, 0o755); err != nil {
 		return err
 	}
 	if err := os.Remove(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi")); err != nil {
@@ -223,14 +231,14 @@ func deAppifyUserJS(profile string) error {
 		lines[i] = line
 	}
 	out := strings.Join(lines, "\n")
-	if err := ioutil.WriteFile(profile, []byte(out), 0644); err != nil {
+	if err := ioutil.WriteFile(profile, []byte(out), 0o644); err != nil {
 		return err
 	}
 	return nil
 }
 
 func forceUserChromeCSS(profile string) error {
-	if err := ioutil.WriteFile(profile, userChrome, 0644); err != nil {
+	if err := ioutil.WriteFile(profile, userChrome, 0o644); err != nil {
 		return err
 	}
 	return nil
@@ -239,7 +247,7 @@ func forceUserChromeCSS(profile string) error {
 // Run creates a basic instance of the Firefox manager with a default profile directory and
 // launches duckduckgo.com
 func Run() error {
-	var FIREFOX, ERROR = WebAppFirefox("basic", false, "")
+	FIREFOX, ERROR := WebAppFirefox("basic", false, "")
 	if ERROR != nil {
 		return ERROR
 	}

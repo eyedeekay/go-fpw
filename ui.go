@@ -34,7 +34,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-
 	"sync"
 )
 
@@ -71,7 +70,6 @@ func PortablePath() string {
 				log.Println(path)
 				return path
 			}
-
 		}
 	}
 	return "false"
@@ -198,9 +196,11 @@ func darwinDefaultPaths() []string {
 	if err != nil {
 		panic(err)
 	}
-	elements := []string{"/Applications/Firefox.app/Contents/MacOS/",
+	elements := []string{
+		"/Applications/Firefox.app/Contents/MacOS/",
 		"/Applications/Waterfox.app/Contents/MacOS/",
-		"/Applications/Librewolf.app/Contents/MacOS/"}
+		"/Applications/Librewolf.app/Contents/MacOS/",
+	}
 	pathvar := os.Getenv("PATH")
 	pathelements := strings.Split(pathvar, ":")
 	additionalelements := []string{"/opt/bin", filepath.Join(userHome, "bin")}
@@ -223,11 +223,11 @@ func LocateFirefox() string {
 	paths := defaultPaths()
 
 	for _, path := range paths {
-		//for _, exe := range exes {
+		// for _, exe := range exes {
 
 		if info, err := os.Stat(path); os.IsNotExist(err) {
-			//err != nil {
-			//log.Println(exepath, err)
+			// err != nil {
+			// log.Println(exepath, err)
 			continue
 		} else {
 			if !info.IsDir() {
@@ -267,19 +267,19 @@ func PromptDownload() {
 type firefox struct {
 	sync.Mutex
 	cmd *exec.Cmd
-	//ws       *websocket.Conn
+	// ws       *websocket.Conn
 	id          int32
 	target      string
 	session     string
 	window      int
 	certManager *CertManager
-	//pending  map[int]chan result
+	// pending  map[int]chan result
 }
 
 type ui struct {
 	*firefox
-	done    chan struct{}
-	tmpDir  string
+	done   chan struct{}
+	tmpDir string
 }
 
 func (u *ui) Log() string {
@@ -327,19 +327,18 @@ func randir() string {
 func directory(dir string) string {
 	i := 0
 	if file, err := os.Stat(dir); os.IsNotExist(err) {
-		os.MkdirAll(dir, 0755)
+		os.MkdirAll(dir, 0o755)
 	} else {
 		if !file.IsDir() {
 			for {
 				dir = dir + "-" + strconv.Itoa(i)
 				i++
 				if _, err := os.Stat(dir); os.IsNotExist(err) {
-					os.MkdirAll(dir, 0755)
+					os.MkdirAll(dir, 0o755)
 					return dir
 				}
 			}
 		}
-
 	}
 	return dir
 }
@@ -374,7 +373,7 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 	args = append(args, customArgs...)
 	args = append(args, url)
 	args = trimBlankArgs(args)
-	//args = append(args, "--remote-debugging-port=0")
+	// args = append(args, "--remote-debugging-port=0")
 	log.Println(FirefoxExecutable(), args)
 
 	firefox, err := newFirefoxWithArgs(FirefoxExecutable(), args...)
@@ -388,9 +387,9 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 		close(done)
 	}()
 	return &ui{
-		firefox:     firefox,
-		done:        done,
-		tmpDir:      tmpDir,
+		firefox: firefox,
+		done:    done,
+		tmpDir:  tmpDir,
 	}, nil
 }
 

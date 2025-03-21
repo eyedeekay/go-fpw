@@ -1,12 +1,13 @@
 package fcw
 
 import (
-	"fmt"
-	cert9util "github.com/eyedeekay/cert9util/lib"
-	"path/filepath"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"os"
+	"path/filepath"
+
+	cert9util "github.com/eyedeekay/cert9util/lib"
 )
 
 // CertManager handles Firefox certificate operations

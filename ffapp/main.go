@@ -1,10 +1,9 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/url"
-
-	"flag"
 
 	fcw "github.com/eyedeekay/go-fpw"
 )
