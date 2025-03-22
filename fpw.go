@@ -121,12 +121,17 @@ func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Println("Unpacking App" + userdir)
 	userdir, err = UnpackApp(userdir)
 	if err != nil {
 		return nil, err
 	}
-	defer deAppifyUserJS(userdir)
-	return NewFirefox("", userdir, 800, 600, cleanedArgs...)
+	log.Println("Unpacked App" + userdir)
+	ui, err := NewFirefox("", userdir, 800, 600, cleanedArgs...)
+	if err != nil {
+		return nil, err
+	}
+	return ui, nil
 }
 
 // UnpackApp unpacks a "App" mode profile into the "profileDir" and returns the
@@ -148,7 +153,7 @@ func UnpackApp(profileDir string) (string, error) {
 	if err := appifyUserJS(filepath.Join(profileDir, "prefs.js")); err != nil {
 		return filepath.Join(profileDir), err
 	}
-	return filepath.Join(profileDir), nil
+	return profileDir, nil
 }
 
 /*
@@ -165,6 +170,9 @@ func appifyUserJS(profile string) error {
 		return err
 	}
 	if err := ioutil.WriteFile(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi"), extraExtension, 0o644); err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(filepath.Join(extDir, "awo@eyedeekay.github.io.xpi"), offlineExtension, 0o644); err != nil {
 		return err
 	}
 	if _, err := os.Stat(profile); err != nil {
@@ -210,16 +218,20 @@ func appifyUserJS(profile string) error {
 	return nil
 }
 
-func deAppifyUserJS(profile string) error {
+func DeAppifyUserJS(profile string) error {
 	if _, err := os.Stat(profile); err != nil {
 		return nil
 	}
-	extDir := filepath.Join(filepath.Dir(profile), "extensions")
-	if err := os.MkdirAll(extDir, 0o755); err != nil {
-		return err
-	}
+	extDir := filepath.Join(profile, "extensions")
 	if err := os.Remove(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi")); err != nil {
 		log.Println(err)
+	} else {
+		log.Println("Removed {786c38ae-eac8-41df-ad3b-3c737603bead}.xpi")
+	}
+	if err := os.Remove(filepath.Join(extDir, "awo@eyedeekay.github.io.xpi")); err != nil {
+		log.Println(err)
+	} else {
+		log.Println("Removed awp@eyedeekay.github.io.xpi")
 	}
 	content, err := ioutil.ReadFile(profile)
 	if err != nil {

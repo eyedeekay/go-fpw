@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	starturl := flag.String("url", "https://duckduckgo.com", "URL to open in Firefox")
+	starturl := flag.String("url", "http://localhost:7657", "URL to open in Firefox")
 	flag.Parse()
 	uri, err := url.Parse(*starturl)
 	if err != nil {
@@ -25,6 +25,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
+	defer fcw.DeAppifyUserJS(uri.Hostname())
 	log.Println(ui.Log())
 	<-ui.Done()
 }
