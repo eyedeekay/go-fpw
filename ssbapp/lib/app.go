@@ -47,15 +47,6 @@ func WebAppFunction(startURL string, profileBase string, private bool) {
 	<-ui.Done()
 }
 
-// getDefaultProfileDir returns the default base directory for profiles
-func getDefaultProfileDir() string {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return filepath.Join(".", "profiles")
-	}
-	return filepath.Join(homeDir, ".sitebrowsers")
-}
-
 // sanitizeHostname makes the hostname safe for use as a directory name
 func sanitizeHostname(hostname string) string {
 	// Replace potentially problematic characters
