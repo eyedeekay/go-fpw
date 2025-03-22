@@ -13,11 +13,12 @@ func main() {
 	startURL := flag.String("url", "", "URL for the site-specific browser (required)")
 	profileBase := flag.String("profiles", getDefaultProfileDir(), "Base directory for profiles")
 	private := flag.Bool("private", false, "Use private browsing mode")
+	offline := flag.Bool("offline", false, "Use offline mode")
 
 	flag.Parse()
 
 	// Validate URL
-	ssb.WebAppFunction(*startURL, *profileBase, *private)
+	ssb.WebAppFunction(*startURL, *profileBase, *private, *offline)
 }
 
 // getDefaultProfileDir returns the default base directory for profiles

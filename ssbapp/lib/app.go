@@ -12,7 +12,7 @@ import (
 	fcw "github.com/eyedeekay/go-fpw"
 )
 
-func WebAppFunction(startURL string, profileBase string, private bool) {
+func WebAppFunction(startURL, profileBase string, private, offline bool) {
 	if startURL == "" {
 		fmt.Fprintf(os.Stderr, "Error: -url flag is required\n")
 		flag.Usage()
@@ -37,7 +37,7 @@ func WebAppFunction(startURL string, profileBase string, private bool) {
 	}
 
 	// Create and configure Firefox instance
-	ui, err := fcw.WebAppFirefox(profileDir, private, startURL)
+	ui, err := fcw.WebAppFirefox(profileDir, private, offline, startURL)
 	if err != nil {
 		log.Fatalf("Failed to start Firefox: %v", err)
 	}

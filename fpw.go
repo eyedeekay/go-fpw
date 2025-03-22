@@ -91,7 +91,7 @@ func increment(i *int) int {
 // WebAppFirefox sets up a new Firefox instance, and creates the profile directory if
 // it does not already exist. It turns Firefox into a WebApp-Viewer with the provided
 // profile
-func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
+func WebAppFirefox(userdir string, private, offline bool, args ...string) (UI, error) {
 	// i := 0
 	// log.Println(increment(&i))
 	userdir = directory(userdir)
@@ -122,7 +122,7 @@ func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
 		return nil, err
 	}
 	log.Println("Unpacking App" + userdir)
-	userdir, err = UnpackApp(userdir)
+	userdir, err = UnpackApp(userdir, offline)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func WebAppFirefox(userdir string, private bool, args ...string) (UI, error) {
 // UnpackApp unpacks a "App" mode profile into the "profileDir" and returns the
 // path to the profile and possibly, an error if something goes wrong. If everything
 // works, the error will be nil
-func UnpackApp(profileDir string) (string, error) {
+func UnpackApp(profileDir string, offline bool) (string, error) {
 	if err := os.MkdirAll(filepath.Join(profileDir, "chrome"), 0o755); err != nil {
 		return filepath.Join(profileDir), err
 	}
@@ -147,13 +147,13 @@ func UnpackApp(profileDir string) (string, error) {
 	if err := os.WriteFile(filepath.Join(profileDir, "user.js"), UserOverrides, 0o644); err != nil {
 		log.Println(err)
 	}
-	if err := appifyUserJS(filepath.Join(profileDir, "user-overrides.js")); err != nil {
+	if err := appifyUserJS(filepath.Join(profileDir, "user-overrides.js"), offline); err != nil {
 		return filepath.Join(profileDir), err
 	}
-	if err := appifyUserJS(filepath.Join(profileDir, "user.js")); err != nil {
+	if err := appifyUserJS(filepath.Join(profileDir, "user.js"), offline); err != nil {
 		return filepath.Join(profileDir), err
 	}
-	if err := appifyUserJS(filepath.Join(profileDir, "prefs.js")); err != nil {
+	if err := appifyUserJS(filepath.Join(profileDir, "prefs.js"), offline); err != nil {
 		return filepath.Join(profileDir), err
 	}
 	return profileDir, nil
@@ -164,7 +164,7 @@ func UnpackApp(profileDir string) (string, error) {
 
  */
 
-func appifyUserJS(profile string) error {
+func appifyUserJS(profile string, offline bool) error {
 	prefset := "user_pref(\"extensions.autoDisableScopes\", 0);\n"
 	prefset += "user_pref(\"extensions.enabledScopes\", 1);\n"
 	prefset += "user_pref(\"toolkit.legacyUserProfileCustomizations.stylesheets\", true);\n"
@@ -175,8 +175,10 @@ func appifyUserJS(profile string) error {
 	if err := os.WriteFile(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi"), extraExtension, 0o644); err != nil {
 		return err
 	}
-	if err := os.WriteFile(filepath.Join(extDir, "awo@eyedeekay.github.io.xpi"), offlineExtension, 0o644); err != nil {
-		return err
+	if offline {
+		if err := os.WriteFile(filepath.Join(extDir, "awo@eyedeekay.github.io.xpi"), offlineExtension, 0o644); err != nil {
+			return err
+		}
 	}
 	if _, err := os.Stat(profile); err != nil {
 		if strings.Contains(profile, "prefs.js") {
@@ -273,7 +275,7 @@ func forceUserChromeCSS(profile string) error {
 // Run creates a basic instance of the Firefox manager with a default profile directory and
 // launches duckduckgo.com
 func Run() error {
-	FIREFOX, ERROR := WebAppFirefox("basic", false, "")
+	FIREFOX, ERROR := WebAppFirefox("basic", false, false, "https://duckduckgo.com")
 	if ERROR != nil {
 		return ERROR
 	}
