@@ -7,7 +7,7 @@ release: fmt
 	gothub release -p -u eyedeekay -r "go-fpw" -t v$(VERSION) -n "lib" -d "tag for release"
 
 build: fmt
-	go build -o ffapp/ffapp ./ffapp
+	go build -o ssbapp/ssbapp ./ssbapp
 
 run: build
-	./ffapp/ffapp
+	./ssbapp/ssbapp

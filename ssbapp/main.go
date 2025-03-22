@@ -35,7 +35,7 @@ func main() {
 
 	// Create profile directory based on hostname
 	profileDir := filepath.Join(*profileBase, sanitizeHostname(uri.Hostname()))
-	if err := os.MkdirAll(profileDir, 0755); err != nil {
+	if err := os.MkdirAll(profileDir, 0o755); err != nil {
 		log.Fatalf("Failed to create profile directory: %v", err)
 	}
 
