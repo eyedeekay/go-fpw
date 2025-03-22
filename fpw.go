@@ -45,10 +45,10 @@ var extraExtension []byte
 var offlineExtension []byte
 
 //go:embed userChrome.css
-var userChrome []byte
+var UserChrome []byte
 
 //go:embed user-overrides.js
-var userOverrides []byte
+var UserOverrides []byte
 
 var dummy embed.FS
 
@@ -144,7 +144,7 @@ func UnpackApp(profileDir string) (string, error) {
 	if err := forceUserChromeCSS(filepath.Join(profileDir, "chrome", "userChrome.css")); err != nil {
 		return filepath.Join(profileDir), err
 	}
-	if err := os.WriteFile(filepath.Join(profileDir, "user.js"), userOverrides, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(profileDir, "user.js"), UserOverrides, 0o644); err != nil {
 		log.Println(err)
 	}
 	if err := appifyUserJS(filepath.Join(profileDir, "user-overrides.js")); err != nil {
@@ -264,7 +264,7 @@ func DeAppifyUserJS(profile string) error {
 }
 
 func forceUserChromeCSS(profile string) error {
-	if err := ioutil.WriteFile(profile, userChrome, 0o644); err != nil {
+	if err := ioutil.WriteFile(profile, UserChrome, 0o644); err != nil {
 		return err
 	}
 	return nil
