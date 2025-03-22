@@ -1,97 +1,63 @@
-# fcw
+# fcw - Firefox Controller Wrapper
 
-Package fcw wraps a Firefox process from start-to-finish, and allows
-the user to pass a profile directory to that process where it will find
-pre-configured settings. It's useful for using Firefox as an interface to
-applications, and for applying specific settings for use when browsing
-overlay networks like Tor or I2P.
+A Go library for managing Firefox instances with custom profiles and settings. Useful for creating site-specific browsers, kiosk applications, or configuring Firefox for overlay networks like Tor or I2P.
 
-## Variables
+## Features
 
-FirefoxExecutable returns a string which points to the preferred Firefox
-executable file as calculated by the LocateFirefox variable
+- Launch Firefox with custom profiles and settings
+- Create WebApp-style Firefox instances 
+- Manage Firefox processes and profiles
+- Certificate management support
+- Private browsing mode
+- Support for portable Firefox installations
+- Cross-platform (Windows, macOS, Linux)
 
-```golang
-var FirefoxExecutable = LocateFirefox
+## Installation
+
+```bash
+go get github.com/eyedeekay/go-fpw
 ```
 
-## Functions
+## Core Functions
 
-### func [LocateFirefox](/ui.go#L214)
+### Basic Usage
 
-`func LocateFirefox() string`
+```go
+// Create and launch Firefox with basic profile
+ui, err := fcw.BasicFirefox("profile-dir", false, "https://example.com")
 
-LocateFirefox returns a path to the Firefox binary, or an empty string if
-Firefox installation is not found.
+// Create a WebApp-style Firefox instance
+ui, err := fcw.WebAppFirefox("webapp-profile", false, false, "https://example.com")
 
-### func [MessageBox](/messagebox.go#L40)
+// Manage certificates
+cm, err := ui.CertManager()
+err = cm.AddCertificate("cert.pem", "nickname")
+```
 
-`func MessageBox(title, text string) bool`
+### WebApp Mode Features
 
-MessageBox creates a dialog box which prompts the user to download and install Firefox if they
-have not already.
+When using `WebAppFirefox()`, the following customizations are applied:
 
-### func [PortablePath](/ui.go#L53)
+- Minimal UI with hidden URL bar
+- Custom userChrome.css for app-like appearance
+- Disabled telemetry and first-run procedures
+- Optional offline mode support
+- Copy URL to clipboard extension
+- User profile customizations enabled
 
-`func PortablePath() string`
+## Site-Specific Browser Application
 
-PortablePath determines if there is a "Portable" Firefox in a sub-directory
-of the runtime directory
+The package includes `ssbapp`, a command-line utility for creating isolated Firefox instances for specific websites. See [ssbapp documentation](ssbapp/README.md) for details.
 
-### func [PromptDownload](/ui.go#L243)
+Example usage:
+```bash
+ssbapp -url "https://example.com" -private -profiles "./my-profiles"
+```
 
-`func PromptDownload()`
+## License
 
-PromptDownload asks user if they want to download and install Firefox, and
-opens a download web page if the user agrees.
+MIT License - See [LICENSE](LICENSE) file
 
-### func [Run](/fpw.go#L270)
+## Contributing
 
-`func Run() error`
-
-Run creates a basic instance of the Firefox manager with a default profile directory and
-launches duckduckgo.com
-
-### func [UnpackApp](/fpw.go#L111)
-
-`func UnpackApp(profileDir string) (string, error)`
-
-UnpackApp unpacks a "App" mode profile into the "profileDir" and returns the
-path to the profile and possibly, an error if something goes wrong. If everything
-works, the error will be nil
-
-## Types
-
-### type [UI](/ui.go#L41)
-
-`type UI interface { ... }`
-
-UI is a wrapper/manager for a Firefox external process.
-
-#### func [BasicFirefox](/fpw.go#L42)
-
-`func BasicFirefox(userdir string, private bool, args ...string) (UI, error)`
-
-BasicFirefox sets up a new Firefox instance, and creates the profile directory if
-it does not already exist.
-
-#### func [NewFirefox](/ui.go#L312)
-
-`func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, error)`
-
-NewFirefox creates a new instance of the Firefox manager.
-
-#### func [WebAppFirefox](/fpw.go#L74)
-
-`func WebAppFirefox(userdir string, private bool, args ...string) (UI, error)`
-
-WebAppFirefox sets up a new Firefox instance, and creates the profile directory if
-it does not already exist. It turns Firefox into a WebApp-Viewer with the provided
-profile
-
-## Sub Packages
-
-* [check](./check)
-
----
-Readme created from Go doc with [goreadme](https://github.com/posener/goreadme)
+Contributions welcome! Please feel free to submit issues and pull requests.
