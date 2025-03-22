@@ -41,8 +41,14 @@ import (
 //go:embed copy_tab_url_to_clipboard-1.0.xpi
 var extraExtension []byte
 
+//go:embed actually_work_offline-2.0-fx.xpi
+var offlineExtension []byte
+
 //go:embed userChrome.css
 var userChrome []byte
+
+//go:embed user-overrides.js
+var userOverrides []byte
 
 var dummy embed.FS
 
