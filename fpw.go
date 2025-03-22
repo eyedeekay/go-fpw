@@ -144,6 +144,9 @@ func UnpackApp(profileDir string) (string, error) {
 	if err := forceUserChromeCSS(filepath.Join(profileDir, "chrome", "userChrome.css")); err != nil {
 		return filepath.Join(profileDir), err
 	}
+	if err := os.WriteFile(filepath.Join(profileDir, "user-overrides.js"), userOverrides, 0o644); err != nil {
+		log.Println(err)
+	}
 	if err := appifyUserJS(filepath.Join(profileDir, "user-overrides.js")); err != nil {
 		return filepath.Join(profileDir), err
 	}
@@ -169,10 +172,10 @@ func appifyUserJS(profile string) error {
 	if err := os.MkdirAll(extDir, 0o755); err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi"), extraExtension, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(extDir, "{786c38ae-eac8-41df-ad3b-3c737603bead}.xpi"), extraExtension, 0o644); err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(filepath.Join(extDir, "awo@eyedeekay.github.io.xpi"), offlineExtension, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(extDir, "awo@eyedeekay.github.io.xpi"), offlineExtension, 0o644); err != nil {
 		return err
 	}
 	if _, err := os.Stat(profile); err != nil {
@@ -232,6 +235,11 @@ func DeAppifyUserJS(profile string) error {
 		log.Println(err)
 	} else {
 		log.Println("Removed awp@eyedeekay.github.io.xpi")
+	}
+	if err := os.Remove(filepath.Join(profile, "user-overrides.js")); err != nil {
+		log.Println(err)
+	} else {
+		log.Println("Removed user-overrides.js")
 	}
 	content, err := ioutil.ReadFile(profile)
 	if err != nil {
