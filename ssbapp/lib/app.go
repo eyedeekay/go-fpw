@@ -12,6 +12,19 @@ import (
 	fcw "github.com/eyedeekay/go-fpw"
 )
 
+// WebAppFunction is the main entry point for the site-specific browser
+// application. It creates a new Firefox instance and navigates to the
+// specified URL.
+// The profileBase argument is the base directory for profiles.
+// The private argument specifies whether to use private browsing mode.
+// The offline argument specifies whether to use offline mode.
+// The startURL argument is the URL to navigate to.
+// If the URL is invalid, the function will log an error and exit.
+// If the profile directory cannot be created, the function will log an error
+// and exit.
+// If the Firefox instance cannot be started, the function will log an error
+// and exit.
+// The function will wait for the browser to close before returning/terminating.
 func WebAppFunction(startURL, profileBase string, private, offline bool) {
 	if startURL == "" {
 		fmt.Fprintf(os.Stderr, "Error: -url flag is required\n")

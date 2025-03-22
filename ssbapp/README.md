@@ -39,6 +39,7 @@ ssbapp -url "https://example.com" \
 - `-url`: The website URL to create a dedicated browser for (required)
 - `-profiles`: Base directory for storing profiles (default: ~/.sitebrowsers)
 - `-private`: Enable private browsing mode (default: false)
+- `-offline`: Enable offline, localhost-only mode (default:false)
 
 ## Profile Management
 
@@ -62,6 +63,11 @@ ssbapp -url "https://duckduckgo.com" -private
 Use custom profile location:
 ```bash
 ssbapp -url "https://example.com" -profiles "./my-browsers"
+```
+
+Use offline mode:
+```bash
+ssbapp -url "http://localhost:7657" -offline
 ```
 
 ## Dependencies
