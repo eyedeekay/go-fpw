@@ -77,6 +77,7 @@ type firefox struct {
 	session     string
 	window      int
 	certManager *CertManager
+	profileDir  string
 	// pending  map[int]chan result
 }
 
@@ -99,6 +100,7 @@ func (u *ui) Done() <-chan struct{} {
 }
 
 func (u *ui) Close() error {
+	defer DeAppifyUserJS(u.firefox.profileDir)
 	// ignore err, as the firefox process might be already dead, when user close the window.
 	u.firefox.kill()
 	<-u.done
@@ -185,6 +187,7 @@ func NewFirefox(url, dir string, width, height int, customArgs ...string) (UI, e
 	if err != nil {
 		return nil, err
 	}
+	firefox.profileDir = dir
 
 	go func() {
 		firefox.cmd.Wait()

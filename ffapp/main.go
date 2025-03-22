@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	defer fcw.DeAppifyUserJS(uri.Hostname())
+	defer ui.Close()
 	log.Println(ui.Log())
 	<-ui.Done()
 }
