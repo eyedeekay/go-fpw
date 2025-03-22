@@ -10,4 +10,4 @@ build: fmt
 	go build -o ssbapp/ssbapp ./ssbapp
 
 run: build
-	./ssbapp/ssbapp
+	./ssbapp/ssbapp -url http://localhost:7657
